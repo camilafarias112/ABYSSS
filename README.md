@@ -9,16 +9,23 @@ We have 3 platforms to use for this purpose: NetLogo, Mesa (Python), DSAIRM (R)
 We have simplified a quite complicated cascade into three compartments that we can more easily model. The "+" sign represents the events that increase the levels and the "-" sign represents the events that lead to a decrease.
 
 1) S. aureus (SA)
- + Constant rate of replication
- - Neutrophil count
+
+ \+ Constant rate of replication
+ 
+ \- Neutrophil count
 
 2) Innate immunity signals (IL1alpha and chemokines)
- + Levels of s. aureus as a function of distance it has traveled into the skin
- - diffuses out
+
+ \+ Levels of s. aureus as a function of distance it has traveled into the skin
+
+\- diffuses out
 
 3) Neutrophils
- + Rate of increase as a function of innate immunity signals
- - Rate of diffusion out of the skin layer
+
+\+ Rate of increase as a function of innate immunity signals
+
+\- Rate of diffusion out of the skin layer
+
 
 
 After we model the homeostasis, we can "distrupt" the system and see if the model behaves appropriately.
