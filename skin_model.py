@@ -4,16 +4,52 @@ from mesa.space import MultiGrid
 
 
 class Bacteria(Agent):
-    def __init__(self, unique_id, model):
-        super().__init__(unique_id, model)
+    def __init__(self, unique_id, age, model):
+        super().__init__(unique_id, age, model)
+        
+    def move(self):
+        ### bacteria can only move right with a random number of steps
+        return
+
+    def generate_chemokines(self):
+        return
+
+    def reproduce(self):
+        return
+
+    def step(self):
+        ## bacteria will move
+
+        ## generate x number of Neutrophils (may have to move this to another class)
+
+        ## reproduce
+
+        ## die if age = x
+
+
+
+#class Chemokine(Agent):
+#    def __init__(self, unique_id, model):
+#        super().__init__(unique_id, model)
+#    def step(self):
+#        ## recruit neutrophils
+#        ## they won't move
+#        ## decay
+
 
 class Neutrophil(Agent):
-    def __init__(self, unique_id, model):
-        super().__init__(unique_id, model)
+    def __init__(self, unique_id, age, model):
+        super().__init__(unique_id, age, model)
 
-class Chemokine(Agent):
-    def __init__(self, unique_id, model):
-        super().__init__(unique_id, model)
+
+
+    def step(self):
+        ## neutrophils will home to a bacteria
+
+        ## eat a bacteria if it's in the neighboring cells
+        
+
+        ## die after age = x
 
 class Skin(Model):
     def __init__(self, N_bacteria, width, height):
