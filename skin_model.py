@@ -18,6 +18,7 @@ class Bacteria(Agent):
         return
 
     def step(self):
+        return
         ## bacteria will move
 
         ## generate x number of Neutrophils (may have to move this to another class)
@@ -44,6 +45,7 @@ class Neutrophil(Agent):
 
 
     def step(self):
+        return
         ## neutrophils will home to a bacteria
 
         ## eat a bacteria if it's in the neighboring cells
