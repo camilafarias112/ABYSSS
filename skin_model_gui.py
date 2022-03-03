@@ -1,20 +1,45 @@
 from skin_model import *
-from mesa.visualization.modules import CanvasGrid
+from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.ModularVisualization import ModularServer
 
+'''
+Compartment vizualization
+'''
 
 def agent_portrayal(agent):
-    portrayal = {"Shape": "circle",
-                 "Filled": "true",
-                 "Layer": 0,
-                 "Color": "red",
-                 "r": 0.2}
+    if agent is None:
+        return
+
+    portrayal = {}
+
+    if type(agent) is Bacteria:
+        portrayal["Shape"] = "Viz/Microbe_Staphylococcus.png"
+        portrayal["scale"] = 0.8
+        portrayal["Layer"] = 1
+
+#    elif type(agent) is Neutrophil:
+#        portrayal["Shape"] = "Viz/Neutrophil.png"
+#        portrayal["scale"] = 0.9
+#        portrayal["Layer"] = 1   
+
     return portrayal
 
-grid = CanvasGrid(agent_portrayal, 10, 10, 500, 500)
+'''
+The canvas and information input
+'''
+
+grid = CanvasGrid(agent_portrayal, 15, 15, 500, 500) # Size of the grid
+
+chart = ChartModule([{"Label": "S. aureus burden",
+                      "Color": "Purple"}],
+                    data_collector_name='datacollector')
+
 server = ModularServer(Skin,
-                       [grid],
+                       [grid, chart],
                        "Skin Infection Model",
-                       {"N_bacteria":5, "width":10, "height":10})
+                       {"N_bacteria":15, "width":15, "height":15}) # Area that the bacteria are allowed to start
+
 server.port = 8521 # The default
 server.launch()
+
+
