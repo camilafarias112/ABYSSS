@@ -20,8 +20,7 @@ class Bacteria(Agent):
     def step(self): # I cleaned up this part, and re-organized the nature of bacteria
         self.increment_age()
         self.move()
-        self.die() 
-#        self.reproduce()
+        self.reproduce()
 
     def move(self):
         ### bacteria can only move right with a random number of steps XX
@@ -35,17 +34,16 @@ class Bacteria(Agent):
     def increment_age(self):
         self.age += 1 # hour
 
-    def die(self):  # Tried to set up reproduction, but I couldn't make it work!
-        if self.age > 168: # 24h x 7 days = 168
-            self.model.grid._remove_agent(self.pos, self)
-            self.model.schedule.remove(self)
-            living = False
- #       else:
- #           if self.random.random() < self.model.bacteria_reproduce:
- #           self.age = 100
- #           baby_bacteria = Bacteria(self.model.next.id(), self.model, self.age)
- #           self.model.grid.place_agent(baby_bacteria)
- #           self.model.schedule.add(baby_bacteria)
+    def reproduce(self):
+        #if self.age > 168: # 24h x 7 days = 168
+        #    self.model.grid._remove_agent(self.pos, self)
+        #    self.model.schedule.remove(self)
+        #    living = False
+        #else:
+        if self.random.random() < self.model.bacteria_reproduce:
+            baby_bacteria = Bacteria(self.model.next_id(), self.model)
+            self.model.grid.place_agent(baby_bacteria, self.pos)
+            self.model.schedule.add(baby_bacteria)
 
 class Neutrophil(Agent):
     def __init__(self, unique_id, model):
@@ -57,7 +55,7 @@ class Neutrophil(Agent):
         self.increment_age()
         self.move()
         self.die() 
-#        self.reproduce()
+        #self.reproduce()
 
     def move(self):
         ### Neutrophils can only move left with a random number of steps XX
@@ -76,12 +74,12 @@ class Neutrophil(Agent):
             self.model.grid._remove_agent(self.pos, self)
             self.model.schedule.remove(self)
             living = False
- #       else:
- #           if self.random.random() < self.model.bacteria_reproduce:
- #           self.age = 100
- #           baby_bacteria = Bacteria(self.model.next.id(), self.model, self.age)
- #           self.model.grid.place_agent(baby_bacteria)
- #           self.model.schedule.add(baby_bacteria)
+  #      else:
+  #          if self.random.random() < self.model.bacteria_reproduce:
+  #          self.age = 100
+  #          baby_bacteria = Bacteria(self.model.next.id(), self.model, self.age)
+  #          self.model.grid.place_agent(baby_bacteria)
+  #          self.model.schedule.add(baby_bacteria)
 
 '''
 Skin Model
@@ -93,12 +91,11 @@ class Skin(Model):
 #    bacteria_reproduce = 0.04
     verbose = False  # Print-monitoring
 
-    def __init__(self, N_bacteria, width, height):
-#    def __init__(self, N_bacteria, width, height, # Things that have to be provided
-#                  bacteria_reproduce = 0.04): # Things that are automatic
+    def __init__(self, N_bacteria, N_neutrophil, bacteria_reproduce, width, height):
         super().__init__()    
-#        self.bacteria_reproduce = bacteria_reproduce
         self.num_bacteria = N_bacteria
+        self.num_neutrophil = N_neutrophil
+        self.bacteria_reproduce = bacteria_reproduce
         self.grid = MultiGrid(width, height, False)
         self.schedule = RandomActivationByType(self)
         self.datacollector = DataCollector(
@@ -114,6 +111,15 @@ class Skin(Model):
             # add the bacteria to the leftmost location with random y
             y = self.random.randrange(self.grid.height)
             self.grid.place_agent(b, (0, y))
+
+        # Create initial number of neutrophils
+        for i in range(self.num_neutrophil):
+            b = Neutrophil(i, self)
+            self.schedule.add(b)
+
+            # add the neutrophil to the leftmost location with random y
+            y = self.random.randrange(self.grid.height)
+            self.grid.place_agent(b, (self.grid.width-1, y))
 
     def step(self):
         self.schedule.step()
