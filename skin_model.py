@@ -1,34 +1,32 @@
 from mesa import Agent, Model
 from mesa.time import RandomActivation
 from mesa.space import MultiGrid
-from mesa.time import RandomActivationByType # Will be needed when other Agents are added
+from mesa.time import RandomActivationByType
 from mesa.datacollection import DataCollector
 import numpy as np
 
 '''
 Compartments
-1) Bacteria (S. aureus) - in progress
-2) Neutrophils - TBD
+1) Bacteria (S. aureus)
+2) Neutrophils
 '''
 
 class Bacteria(Agent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         #self.age = self.random.randint(0, 72) # The start age as random
-        #living = True # Indicate to be alive
                 
     def get_id(self):
         return "B_ID: " + str(self.unique_id)
         
-    def step(self): # I cleaned up this part, and re-organized the nature of bacteria
+    def step(self):
         #self.increment_age()
         self.move()
         self.reproduce()
 
     def move(self):
-        ### bacteria can only move right with a random number of steps XX
-        # Important: It is not moving right. It starts from left only.
-        # See forest fire example for that.
+        # Get the position of the neighboring cells and
+        # select a random position to move to
         possible_steps = self.model.grid.get_neighborhood(
             self.pos, moore=True, include_center=False)
         new_position = self.random.choice(possible_steps)
@@ -41,8 +39,9 @@ class Bacteria(Agent):
         #if self.age > 168: # 24h x 7 days = 168
         #    self.model.grid._remove_agent(self.pos, self)
         #    self.model.schedule.remove(self)
-        #    living = False
         #else:
+
+        # Bacteria has a random change of reproducing
         if self.random.random() < self.model.bacteria_reproduce:
             baby_bacteria = Bacteria(self.model.next_id(), self.model)
             self.model.grid.place_agent(baby_bacteria, self.pos)
@@ -52,7 +51,6 @@ class Neutrophil(Agent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         #self.age = self.random.randint(0, 72) # The start age as random
-        #living = True # Indicate to be alive
 
     def get_id(self):
         return "N_ID: " + str(self.unique_id)
@@ -62,12 +60,8 @@ class Neutrophil(Agent):
         self.move()
         self.eat_bacteria()
         #self.die() 
-        #self.reproduce()
 
     def move(self):
-        ### Neutrophils can only move left with a random number of steps XX
-        # Important: It is not moving right. It starts from left only.
-        # See forest fire example for that.
         possible_steps = self.model.grid.get_neighborhood(
             self.pos, moore=True, include_center=False)
         new_position = self.random.choice(possible_steps)
@@ -83,6 +77,7 @@ class Neutrophil(Agent):
             self.model.grid.remove_agent(bacteria_to_eat)
             self.model.schedule.remove(bacteria_to_eat)
 
+            # After a neutrophil eats a bacteria, it has a chance of reproduction
             if self.random.random() < self.model.neutrophil_reproduce:
                 baby_neutrophil = Neutrophil(self.model.next_id(), self.model)
                 self.model.grid.place_agent(baby_neutrophil, self.pos)
@@ -91,7 +86,7 @@ class Neutrophil(Agent):
     #def increment_age(self):
     #    self.age += 1 # hour
 
-    #def die(self):  # Tried to set up reproduction, but I couldn't make it work!
+    #def die(self):
     #    if self.age > 168: # 24h x 7 days = 168
     #        self.model.grid.remove_agent(self)
     #        self.model.schedule.remove(self)
@@ -103,15 +98,13 @@ Skin Model
 # Actual Model:
 class Skin(Model):
 
-#    bacteria_reproduce = 0.04
-#    verbose = False  # Print-monitoring
-
     def __init__(self, N_bacteria, N_neutrophil, bacteria_reproduce, neutrophil_reproduce, width, height):
         super().__init__()    
         self.num_bacteria = N_bacteria
         self.num_neutrophil = N_neutrophil
         self.bacteria_reproduce = bacteria_reproduce
         self.neutrophil_reproduce = neutrophil_reproduce
+
         self.grid = MultiGrid(width, height, False)
         self.schedule = RandomActivationByType(self)
         self.running=True
@@ -121,7 +114,7 @@ class Skin(Model):
             b = Bacteria(self.next_id(), self)
             self.schedule.add(b)
 
-            # add the bacteria to the leftmost location with random y
+            # add the bacteria to the left-most location with random y
             y = self.random.randrange(self.grid.height)
             self.grid.place_agent(b, (0, y))
 
@@ -130,10 +123,11 @@ class Skin(Model):
             b = Neutrophil(self.next_id(), self)
             self.schedule.add(b)
 
-            # add the neutrophil to the leftmost location with random y
+            # add the neutrophil to the right-most location with random y
             y = self.random.randrange(self.grid.height)
             self.grid.place_agent(b, (self.grid.width-1, y))
 
+        # Data collection plots for the graphs
         self.datacollector = DataCollector({
             'S. aureus burden': 'bacteria',
             'Neutrophils': 'neutrophil'
@@ -152,7 +146,3 @@ class Skin(Model):
         #print([obj.get_id() for obj in self.schedule.agents if isinstance(obj, Neutrophil)])
         self.datacollector.collect(self)
         self.schedule.step()
-
-    #def run_model(self, step_count=168): # This is not running, supposed to be the initial and final burden track
-    #    for i in range(step_count):
-    #        self.step()

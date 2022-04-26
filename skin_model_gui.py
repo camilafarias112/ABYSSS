@@ -29,7 +29,7 @@ def agent_portrayal(agent):
 The canvas and information input
 '''
 
-grid = CanvasGrid(agent_portrayal, 15, 15, 500, 500) # Size of the grid
+grid = CanvasGrid(agent_portrayal, 15, 15, 500, 500)
 
 chart = ChartModule([{"Label": "S. aureus burden", "Color": "purple"},
                      {"Label": "Neutrophils","Color": "red"}
@@ -54,7 +54,7 @@ model_params = {
 server = ModularServer(Skin,
                        [grid, chart],
                        "Skin Infection Model",
-                       model_params) # Area that the bacteria are allowed to start
+                       model_params)
 
 server.port = 8521 # The default
 server.launch()
