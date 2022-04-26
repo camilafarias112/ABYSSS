@@ -1,6 +1,7 @@
 from skin_model import *
 from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.ModularVisualization import ModularServer
+from mesa.visualization.UserParam import UserSettableParameter
 
 '''
 Compartment vizualization
@@ -30,14 +31,30 @@ The canvas and information input
 
 grid = CanvasGrid(agent_portrayal, 15, 15, 500, 500) # Size of the grid
 
-chart = ChartModule([{"Label": "S. aureus burden",
-                      "Color": "Purple"}],
-                    data_collector_name='datacollector')
+chart = ChartModule([{"Label": "S. aureus burden", "Color": "purple"},
+                     {"Label": "Neutrophils","Color": "red"}
+])
+
+
+model_params = {
+    'width': 15,
+    'height': 15,
+    'N_bacteria': UserSettableParameter(
+        'slider', 'Number of bacteria', 10, 0, 100, 1),
+    'N_neutrophil': UserSettableParameter(
+        'slider', 'Number of neutrophils', 30, 0, 100, 1),
+    'bacteria_reproduce': UserSettableParameter(
+        'slider', 'Probability of bacteria multiplying', 0.01, 0, 1, 0.05),
+    'neutrophil_reproduce': UserSettableParameter(
+        'slider', 'Probability of neutrophil multiplying', 0.01, 0, 1, 0.05)
+}
+
+
 
 server = ModularServer(Skin,
                        [grid, chart],
                        "Skin Infection Model",
-                       {"N_bacteria":15, "N_neutrophil":15, "bacteria_reproduce":0.5, "width":15, "height":15}) # Area that the bacteria are allowed to start
+                       model_params) # Area that the bacteria are allowed to start
 
 server.port = 8521 # The default
 server.launch()
